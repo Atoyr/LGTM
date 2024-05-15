@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { afterUpdate } from 'svelte';  import { onMount } from 'svelte';
+  import { afterUpdate } from 'svelte';
 
   let imageUrl: string;
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D | null;
+  
+  let textFont = 'sans-serif';
+  let subtextFont = 'serif';
 
   function handleImageUpload(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -11,7 +14,6 @@
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
-
         if (typeof e.target?.result === 'string') {
           imageUrl = e.target?.result;
           drawImageWithText(imageUrl);
@@ -34,7 +36,7 @@
         const subtext = 'Looks Good To Me';
         const fontSize = img.width / 4;
         const subFontSize = fontSize / 8;
-        ctx.font = `${fontSize}px sans-serif`;
+        ctx.font = `${fontSize}px ${textFont}`;
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -45,7 +47,7 @@
         ctx.fillText(text, x, y);
 
         // Locks good to meのテキストを文字の下に追加
-        ctx.font = `${subFontSize}px serif`;
+        ctx.font = `${subFontSize}px ${subtextFont}`;
         ctx.fillText(subtext, x, y + fontSize / 2);
       }
     };
@@ -60,24 +62,23 @@
 </script>
 
 <style>
-  .image-preview {
-    max-width: 100%;
-    max-height: 400px;
-  }
-
   canvas {
     display: block;
     margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
+    max-width: 100%;
   }
 </style>
 
 <main>
-  <h1>Image Upload Example with LGTM</h1>
+  <h1>LGTM Generator</h1>
   <input type="file" accept="image/*" on:change={handleImageUpload} />
   {#if imageUrl}
     <h2>Image with LGTM:</h2>
     <canvas bind:this={canvas}></canvas>
+    <details>
+      <summary>Detail settings</summary>
+    </details>
   {/if}
 </main>
