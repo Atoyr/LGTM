@@ -5,8 +5,8 @@
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D | null;
   
-  let textFont = 'sans-serif';
-  let subtextFont = 'serif';
+  let textFontFamily: string = 'sans-serif';
+  let subtextFontFamily: string = 'serif';
   let fontColor = '#ffffff';
 
   function handleImageUpload(event: Event): void {
@@ -37,7 +37,7 @@
         const subtext = 'Looks Good To Me';
         const fontSize = img.width / 4;
         const subFontSize = fontSize / 8;
-        ctx.font = `${fontSize}px ${textFont}`;
+        ctx.font = `${fontSize}px ${textFontFamily}`;
         ctx.fillStyle = fontColor;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -48,7 +48,7 @@
         ctx.fillText(text, x, y);
 
         // Locks good to meのテキストを文字の下に追加
-        ctx.font = `${subFontSize}px ${subtextFont}`;
+        ctx.font = `${subFontSize}px ${subtextFontFamily}`;
         ctx.fillText(subtext, x, y + fontSize / 2);
       }
     };
@@ -86,6 +86,34 @@
     <canvas bind:this={canvas}></canvas>
     <details>
       <summary>Detail settings</summary>
+      <div>
+        <label for="font-family">Main Text Font Family:</label>
+        <select id="font-family" bind:value={textFontFamily} on:change={updateCanvas}>
+          <option value="serif">Serif</option>
+          <option value="sans-serif">Sans-serif</option>         
+          <option value="Arial">Arial</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Brush Script MT">Brush Script MT</option>
+          <option value="Comic Sans MS">Comic Sans MS</option>
+        </select>
+      </div>
+      <div>
+        <label for="font-family">Sub Text Font Family:</label>
+        <select id="font-family" bind:value={subtextFontFamily} on:change={updateCanvas}>
+          <option value="serif">Serif</option>
+          <option value="sans-serif">Sans-serif</option>
+          <option value="Arial">Arial</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Brush Script MT">Brush Script MT</option>
+          <option value="Comic Sans MS">Comic Sans MS</option>
+        </select>
+      </div>
       <div>
         <label for="font-color">Font Color:</label>
         <input type="color" id="font-color" bind:value={fontColor} on:input={updateCanvas}>
