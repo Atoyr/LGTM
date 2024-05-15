@@ -7,6 +7,7 @@
   
   let textFont = 'sans-serif';
   let subtextFont = 'serif';
+  let fontColor = '#ffffff';
 
   function handleImageUpload(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -37,7 +38,7 @@
         const fontSize = img.width / 4;
         const subFontSize = fontSize / 8;
         ctx.font = `${fontSize}px ${textFont}`;
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = fontColor;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
@@ -59,6 +60,12 @@
       ctx = canvas.getContext('2d');
     }
   });
+
+  function updateCanvas() {
+    if (imageUrl && typeof imageUrl === 'string') {
+      drawImageWithText(imageUrl);
+    }
+  }
 </script>
 
 <style>
@@ -79,6 +86,10 @@
     <canvas bind:this={canvas}></canvas>
     <details>
       <summary>Detail settings</summary>
+      <div>
+        <label for="font-color">Font Color:</label>
+        <input type="color" id="font-color" bind:value={fontColor} on:input={updateCanvas}>
+      </div>
     </details>
   {/if}
 </main>
