@@ -9,10 +9,13 @@
   let subtextFontFamily: string = 'serif';
   let fontColor = '#ffffff';
 
+  let fileName: string;
+
   function handleImageUpload(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files ? target.files[0] : null;
     if (file) {
+      fileName = file.name.replace(/\.[^/.]+$/, "");
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
         if (typeof e.target?.result === 'string') {
@@ -66,15 +69,72 @@
       drawImageWithText(imageUrl);
     }
   }
+
+  function downloadImage() {
+    if (canvas) {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = fileName ? `${fileName}-lgtm.png` : 'lgtm.png';
+      link.click();
+    }
+  }
 </script>
 
 <style>
+  .canvas-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
   canvas {
     display: block;
+  }
+
+  details {
     margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 100%;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 120px; /* フッターの高さを考慮 */
+  }
+
+  footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+  }
+
+  footer a {
+    text-decoration: none;
+    color: #007acc;
+    margin-bottom: 5px; /* 適度な間隔を追加 */
+  }
+
+  footer img {
+    height: 32px;
+    width: 32px;
+    fill: #007acc;
+    margin-right: 8px;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
   }
 </style>
 
@@ -84,6 +144,7 @@
   {#if imageUrl}
     <h2>Image with LGTM:</h2>
     <canvas bind:this={canvas}></canvas>
+    <button on:click={downloadImage}>Download Image</button>
     <details>
       <summary>Detail settings</summary>
       <div>
@@ -121,3 +182,10 @@
     </details>
   {/if}
 </main>
+<footer>
+
+  <a href="https://github.com/atoyr/LGTM" target="_blank">
+  <img src="/github-mark.svg" alt="GitHub" />
+  </a>
+  <span>&copy; 2024 UCHIYAMA Ryota</span>
+</footer>
