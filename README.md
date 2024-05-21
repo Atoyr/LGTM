@@ -1,5 +1,8 @@
-# LGTM Generator
-{https://lgtm-generator.dev}(LGTM Generator)
+![LGTM Generator](public/lgtm-logo.webp)
+
+This application is LGTM image generator.
+
+[LGTM Generator](https://lgtm-generator.dev)
 
 # What is ...
 これはLGTMの文字を生成するアプリです。
