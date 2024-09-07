@@ -7,7 +7,7 @@
   let ctx: CanvasRenderingContext2D | null;
   
   let textFontFamily: string = 'sans-serif';
-  let subtextFontFamily: string = 'serif';
+  let subtextFontFamily: string = 'sans-serif';
   let fontColor = '#ffffff';
 
   let fileName: string;
@@ -37,10 +37,10 @@
         ctx.drawImage(img, 0, 0);
 
         // LGTMテキストの設定
-        const text = 'LGTM';
-        const subtext = 'Looks Good To Me';
+        const text = 'VTEC';
+        const subtext = 'DOHC';
         const fontSize = img.width / 4;
-        const subFontSize = fontSize / 8;
+        const subFontSize = fontSize / 4;
         ctx.font = `${fontSize}px ${textFontFamily}`;
         ctx.fillStyle = fontColor;
         ctx.textAlign = 'center';
@@ -53,7 +53,7 @@
 
         // Locks good to meのテキストを文字の下に追加
         ctx.font = `${subFontSize}px ${subtextFontFamily}`;
-        ctx.fillText(subtext, x, y + fontSize / 2);
+        ctx.fillText(subtext, x, y - fontSize / 2);
       }
     };
     img.src = src;
@@ -115,20 +115,20 @@
 </style>
 
 <main>
-  <h1>LGTM Generator</h1>
+  <h1>More Power VTEC</h1>
   <input type="file" accept="image/*" on:change={handleImageUpload} />
   {#if imageUrl}
-    <h2>Image with LGTM:</h2>
+    <h2>Image with VTEC:</h2>
     <canvas bind:this={canvas}></canvas>
     <button on:click={downloadImage}>Download Image</button>
     <details>
       <summary>Detail settings</summary>
       <div>
-        <label for="font-family">Main Text Font Family:</label>
+        <label for="font-family">VTEC Text Font Family:</label>
         <FontSelect bind:value={textFontFamily} onChange={updateCanvas} />
       </div>
       <div>
-        <label for="font-family">Sub Text Font Family:</label>
+        <label for="font-family">DOHC Text Font Family:</label>
         <FontSelect bind:value={subtextFontFamily} onChange={updateCanvas} />
       </div>
       <div>
@@ -138,4 +138,5 @@
     </details>
   {/if}
 </main>
+
 
