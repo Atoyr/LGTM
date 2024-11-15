@@ -12,9 +12,41 @@
 
   let fileName: string;
 
+  let isDragging: boolean = false;
+
+  function handleDragOver(event: DragEvent) {
+    event.preventDefault();
+    isDragging = true;
+  }
+
+  function handleDragLeave() {
+    isDragging = false;
+  }
+
+  function handleDrop(event: DragEvent) {
+    event.preventDefault();
+    isDragging = false;
+
+    const files = event.dataTransfer?.files;
+    const file = files ? files[0] : null;
+    if (file) {
+      loadImage(file);
+    }
+  }
+
+  function openFileDialog() {
+    document.getElementById('fileInput')?.click();
+  }
+
   function handleImageUpload(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files ? target.files[0] : null;
+    if (file) {
+      loadImage(file);
+    }
+  }
+
+  function loadImage(file: File){
     if (file) {
       fileName = file.name.replace(/\.[^/.]+$/, "");
       const reader = new FileReader();
@@ -27,6 +59,7 @@
       reader.readAsDataURL(file);
     }
   }
+
 
   function drawImageWithText(src: string): void {
     const img = new Image();
@@ -112,11 +145,46 @@
     font-size: 16px;
     cursor: pointer;
   }
+
+  .dropzone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    width: 40vw;
+  }
+  .dropzone.dragging {
+    border-color: #333;
+    background-color: #f9f9f9;
+  }
+
+  .hidden {
+    display: none;
+  }
 </style>
 
 <main>
   <h1>LGTM Generator</h1>
-  <input type="file" accept="image/*" on:change={handleImageUpload} />
+  <input 
+    id="fileInput" 
+    type="file" 
+    accept="image/*" 
+    class="hidden" 
+    on:change={handleImageUpload} />
+  <div 
+    class="dropzone {isDragging ? 'dragging' : ''}"
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:drop={handleDrop}
+    on:click={openFileDialog}
+  >
+    {#if isDragging}
+      ドロップして描画
+    {:else}
+      ここにファイルをドラッグ＆ドロップ
+    {/if}
+  </div>
   {#if imageUrl}
     <h2>Image with LGTM:</h2>
     <canvas bind:this={canvas}></canvas>
