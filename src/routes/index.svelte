@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { afterUpdate } from 'svelte';
+  import { afterUpdate ,onMount, onDestroy } from 'svelte';
   import FontSelect from '../components/FontSelect.svelte';
 
   let imageUrl: string;
@@ -13,6 +13,46 @@
   let fileName: string;
 
   let isDragging: boolean = false;
+
+  // Add event listener for clipboard paste
+  function handlePaste(event: ClipboardEvent) {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const blob = items[i].getAsFile();
+        if (blob) {
+          fileName = 'clipboard-image';
+          loadImage(blob);
+          break;
+        }
+      }
+    }
+  }
+
+  // Add this function to initialize the paste event listener
+  function initPasteEventListener() {
+    window.addEventListener('paste', handlePaste);
+    return () => {
+      window.removeEventListener('paste', handlePaste);
+    };
+  }
+
+  // Initialize paste event listener when component is mounted
+  
+  let cleanupPasteListener: () => void;
+  
+  onMount(() => {
+    cleanupPasteListener = initPasteEventListener();
+  });
+  
+  onDestroy(() => {
+    if (cleanupPasteListener) {
+      cleanupPasteListener();
+    }
+  });
+
 
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
@@ -185,6 +225,7 @@
       ここにファイルをドラッグ＆ドロップ
     {/if}
   </div>
+  <p class="instructions">または、ページ内で Ctrl+V (Windows) / Cmd+V (Mac) でペースト</p>
   {#if imageUrl}
     <h2>Image with LGTM:</h2>
     <canvas bind:this={canvas}></canvas>
