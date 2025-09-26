@@ -1,4 +1,12 @@
-<slot></slot>
+<script lang="ts">
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
+</script>
+
+{@render children?.()}
 <footer>
   <a href="https://github.com/atoyr/LGTM" target="_blank">
   <img src="/github-mark.svg" alt="GitHub" />

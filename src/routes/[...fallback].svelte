@@ -1,6 +1,5 @@
-<script>
-  export let status;
-  export let error;
+<script lang="ts">
+  let { status, error } = $props();
   let imageUrl = '/404_NotFound.png'; 
 </script>
 

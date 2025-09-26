@@ -1,9 +1,13 @@
 <script lang="ts">
-  export let value: string;
-  export let onChange: (event: Event) => void;
+  interface Props {
+    value: string;
+    onChange: (event: Event) => void;
+  }
+
+  let { value = $bindable(), onChange }: Props = $props();
 </script>
 
-<select id="font-family" bind:value={value} on:change={onChange}>
+<select id="font-family" bind:value={value} onchange={onChange}>
   <option value="serif">Serif</option>
   <option value="sans-serif">Sans-serif</option>         
   <option value="Arial">Arial</option>
