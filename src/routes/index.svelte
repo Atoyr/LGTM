@@ -1,19 +1,18 @@
-<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script lang="ts">
-  import { afterUpdate ,onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import FontSelect from '../components/FontSelect.svelte';
+  import { drawImageWithText } from '../lib/canvas';
 
-  let imageUrl: string;
+  let imageUrl: string = $state('');
   let canvas: HTMLCanvasElement;
-  let ctx: CanvasRenderingContext2D | null;
   
-  let textFontFamily: string = 'sans-serif';
-  let subtextFontFamily: string = 'serif';
-  let fontColor = '#ffffff';
+  let textFontFamily: string = $state('sans-serif');
+  let subtextFontFamily: string = $state('serif');
+  let fontColor = $state('#ffffff');
 
   let fileName: string;
 
-  let isDragging: boolean = false;
+  let isDragging: boolean = $state(false);
 
   // Add event listener for clipboard paste
   function handlePaste(event: ClipboardEvent) {
@@ -41,7 +40,6 @@
   }
 
   // Initialize paste event listener when component is mounted
-  
   let cleanupPasteListener: () => void;
   
   onMount(() => {
@@ -75,10 +73,6 @@
     }
   }
 
-  function openFileDialog() {
-    document.getElementById('fileInput')?.click();
-  }
-
   function handleImageUpload(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files ? target.files[0] : null;
@@ -94,54 +88,40 @@
       reader.onload = (e: ProgressEvent<FileReader>) => {
         if (typeof e.target?.result === 'string') {
           imageUrl = e.target?.result;
-          drawImageWithText(imageUrl);
         }
       };
       reader.readAsDataURL(file);
     }
   }
 
+  function draw() {
+    let text = {
+      content: 'LGTM',
+      fontFamily: textFontFamily,
+      fontColor: fontColor,
+    }
 
-  function drawImageWithText(src: string): void {
-    const img = new Image();
-    img.onload = () => {
-      if (ctx) {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
+    let subText = {
+      content: 'locks good to me',
+      fontFamily: subtextFontFamily,
+      fontColor: fontColor,
+    }
 
-        // LGTMテキストの設定
-        const text = 'LGTM';
-        const subtext = 'Looks Good To Me';
-        const fontSize = img.width / 4;
-        const subFontSize = fontSize / 8;
-        ctx.font = `${fontSize}px ${textFontFamily}`;
-        ctx.fillStyle = fontColor;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // テキストの位置を画像の中央に設定
-        const x = img.width / 2;
-        const y = img.height / 2;
-        ctx.fillText(text, x, y);
-
-        // Locks good to meのテキストを文字の下に追加
-        ctx.font = `${subFontSize}px ${subtextFontFamily}`;
-        ctx.fillText(subtext, x, y + fontSize / 2);
-      }
-    };
-    img.src = src;
+    drawImageWithText(
+      canvas, 
+      imageUrl, 
+      { text, subText, subTextPosition: 'bottom' });
   }
 
-  afterUpdate((): void => {
-    if (canvas && !ctx) {
-      ctx = canvas.getContext('2d');
+  $effect(() => {
+    if (canvas && imageUrl) {
+      draw();
     }
   });
 
   function updateCanvas() {
-    if (imageUrl && typeof imageUrl === 'string') {
-      drawImageWithText(imageUrl);
+    if (canvas && imageUrl) {
+      draw();
     }
   }
 
@@ -155,11 +135,55 @@
   }
 </script>
 
+<main>
+  <h1>LGTM Generator</h1>
+  <label 
+    for="fileInput"
+    class="dropzone {isDragging ? 'dragging' : ''}"
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
+  >
+    {#if isDragging}
+      ドロップして描画
+    {:else}
+      ここにファイルをドラッグ＆ドロップ
+    {/if}
+    <input
+      id="fileInput"
+      type="file"
+      accept="image/*"
+      class="sr-only"
+      onchange={handleImageUpload}
+    />
+  </label>
+  <p class="instructions">または、ページ内で Ctrl+V (Windows) / Cmd+V (Mac) でペースト</p>
+  <canvas bind:this={canvas}></canvas>
+  {#if imageUrl}
+    <h2>Image with LGTM:</h2>
+    <button onclick={downloadImage}>Download Image</button>
+    <details>
+      <summary>Detail settings</summary>
+      <div>
+        <label for="font-family">Main Text Font Family:</label>
+        <FontSelect bind:value={textFontFamily} onChange={updateCanvas} />
+      </div>
+      <div>
+        <label for="font-family">Sub Text Font Family:</label>
+        <FontSelect bind:value={subtextFontFamily} onChange={updateCanvas} />
+      </div>
+      <div>
+        <label for="font-color">Font Color:</label>
+        <input type="color" id="font-color" bind:value={fontColor} oninput={updateCanvas}>
+      </div>
+    </details>
+  {/if}
+</main>
+
 <style>
-  .canvas-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0;
   }
 
   canvas {
@@ -199,53 +223,5 @@
     border-color: #333;
     background-color: #f9f9f9;
   }
-
-  .hidden {
-    display: none;
-  }
 </style>
-
-<main>
-  <h1>LGTM Generator</h1>
-  <input 
-    id="fileInput" 
-    type="file" 
-    accept="image/*" 
-    class="hidden" 
-    on:change={handleImageUpload} />
-  <div 
-    class="dropzone {isDragging ? 'dragging' : ''}"
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
-    on:click={openFileDialog}
-  >
-    {#if isDragging}
-      ドロップして描画
-    {:else}
-      ここにファイルをドラッグ＆ドロップ
-    {/if}
-  </div>
-  <p class="instructions">または、ページ内で Ctrl+V (Windows) / Cmd+V (Mac) でペースト</p>
-  {#if imageUrl}
-    <h2>Image with LGTM:</h2>
-    <canvas bind:this={canvas}></canvas>
-    <button on:click={downloadImage}>Download Image</button>
-    <details>
-      <summary>Detail settings</summary>
-      <div>
-        <label for="font-family">Main Text Font Family:</label>
-        <FontSelect bind:value={textFontFamily} onChange={updateCanvas} />
-      </div>
-      <div>
-        <label for="font-family">Sub Text Font Family:</label>
-        <FontSelect bind:value={subtextFontFamily} onChange={updateCanvas} />
-      </div>
-      <div>
-        <label for="font-color">Font Color:</label>
-        <input type="color" id="font-color" bind:value={fontColor} on:input={updateCanvas}>
-      </div>
-    </details>
-  {/if}
-</main>
 
