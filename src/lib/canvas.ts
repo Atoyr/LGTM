@@ -17,7 +17,7 @@ export function drawImageWithText(
   canvas: HTMLCanvasElement,
   src: string, 
   opts: DrawTextOptions
-): { width: number; height: number } {
+): void {
   const img = new Image();
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('2D context not available');
@@ -28,9 +28,9 @@ export function drawImageWithText(
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
 
+    let fontSize = 0;
     let x = 0;
     let y = 0;
-    let fontSize = 0;
 
     // Text
     fontSize = canvas.width / 4;
