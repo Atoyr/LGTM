@@ -1,4 +1,7 @@
-<slot></slot>
+<script lang="ts">
+</script>
+
+<slot />
 <footer>
   <a href="https://github.com/atoyr/LGTM" target="_blank">
   <img src="/github-mark.svg" alt="GitHub" />

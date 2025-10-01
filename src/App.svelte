@@ -2,7 +2,7 @@
   <Router {routes} />
 </main>
 
-<script context="module">
+<script module>
     import { Router, createRouter } from '@roxi/routify'
     import routes from '../.routify/routes.default.js'
 
