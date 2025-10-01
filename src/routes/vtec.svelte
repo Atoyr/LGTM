@@ -160,7 +160,7 @@
   <p class="instructions">または、ページ内で Ctrl+V (Windows) / Cmd+V (Mac) でペースト</p>
   <canvas bind:this={canvas}></canvas>
   {#if imageUrl}
-    <h2>Image with LGTM:</h2>
+    <h2>Image with VTEC:</h2>
     <button onclick={downloadImage}>Download Image</button>
     <details>
       <summary>Detail settings</summary>
