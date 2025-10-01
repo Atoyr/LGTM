@@ -102,7 +102,7 @@
     }
 
     let subText = {
-      content: 'locks good to me',
+      content: 'Looks Good To Me',
       fontFamily: subtextFontFamily,
       fontColor: fontColor,
     }
